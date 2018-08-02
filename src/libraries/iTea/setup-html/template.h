@@ -1,0 +1,2 @@
+#define ITEA_SETUP_PAGE_ROOT "%s"
+#define ITEA_SETUP_PAGE_REDIRECT "%s"

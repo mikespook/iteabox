@@ -1,0 +1,74 @@
+<!DOCTYPE html>
+<html lang="en">
+	<head>
+		<meta charset="utf-8">
+		<title>Hub AP Settings</title>
+		<style>
+form > div {
+	margin: 16pt 0pt;
+	width: 100%;
+}
+form > div > label {
+	width: 16%;
+	display: inline-block;
+}
+form > div > input {
+	width: 76%;
+	display: inline-block;
+}
+.nav {
+	margin: 0 16px;
+}
+		</style>
+	</head>
+	<body>
+		<h1>Hub AP Settings</h1>
+		<form action="/post" method="POST">
+			<div>
+				<label for="ssid">WiFi SSID</label>
+				<input id="ssid" type="text" name="ssid" placeholder="WiFi SSID" value="$SSID$" maxlength="32">
+			</div>
+			<div>
+				<label for="pass">WiFi Passphrase</label>	
+				<input id="pass" type="text" name="pass" placeholder="WiFi Passphrase" maxlength="32" value="$PASS$"> 
+			</div>
+			<div>
+				<label for="mqttaddr">MQTT Address</label>				
+				<input id="mqttaddr" type="text" name="mqtt-addr" placeholder="MQTT Address" value="$MQTTADDR$" maxlength="64">
+			</div>
+			<div>
+				<label for="mqttport">MQTT Port</label>				
+				<input id="mqttport" type="number" name="mqtt-port" placeholder="MQTT Port" value="$MQTTPORT$" min="1" max="65535">
+			</div>
+			<div>
+				<label for="mqttuser">MQTT User</label>		
+				<input id="mqttuser" type="text" name="mqtt-user" placeholder="MQTT User" maxlength="32" value="$MQTTUSER$"> 
+			</div>
+			<div>
+				<label for="mqttpass">MQTT Pass</label>					
+				<input id="mqttpass" type="text" name="mqtt-pass" placeholder="MQTT Pass" maxlength="32" value="$MQTTPASS$"> 	
+			</div>
+			<div>
+				<label for="mqttclientid">MQTT Client Id</label>					
+				<input id="mqttclientid" type="text" name="mqtt-client-id" placeholder="MQTT Client Id" maxlength="32" value="$MQTTCLIENTID$"> 	
+			</div>		
+			<div>
+				<label for="mqtttopic">MQTT Topic</label>					
+				<input id="mqtttopic" type="text" name="mqtt-topic" placeholder="MQTT Topic" maxlength="32" value="$MQTTTOPIC$"> 	
+			</div>
+			<div>
+				<label for="mqtttopichb">MQTT Heartbeat Topic</label>					
+				<input id="mqtttopichb" type="text" name="mqtt-topic-heartbeat" placeholder="MQTT Heartbeat Topic" maxlength="32" value="$MQTTTOPICHEARTBEAT$"> 	
+			</div>
+			<div>
+				<label for="mqtthbtick">MQTT Heartbeat Tick (Seconds)</label>					
+				<input id="mqtthbtick" type="number" name="mqtt-heartbeat-tick" placeholder="MQTT Heartbeat Tick" min="1" max="86400" value="$MQTTHEARTBEATTICK$">
+			</div>		
+			<button type="submit">Save</button>
+		</form>
+		<hr>
+		<a class="nav" href="/restart">Restart</a>
+		<a class="nav" href="/reset">Reset</a>
+		<a class="nav" href="/debug">Debug</a>
+	</body>
+</html>
