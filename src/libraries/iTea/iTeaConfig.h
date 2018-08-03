@@ -3,7 +3,6 @@
 
 #define ITEA_WIFI_SSID "ITEA-SetupService"
 #define ITEA_WIFI_PASS ""
-#define ITEA_SERIAL_SPEED 9600
 
 // WiFi
 #define ITEA_WIFI_SSID_OFFSET	0
