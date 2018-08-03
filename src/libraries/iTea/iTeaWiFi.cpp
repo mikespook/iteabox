@@ -9,10 +9,14 @@ void iTeaWiFiClass::init(iTeaConfigClass *config) {
 }
 // Connect WiFi
 uint8_t iTeaWiFiClass::connect() {
+	if (WiFi.isConnected()) {
+		return WL_CONNECTED;
+	}
 	// read SSID and Password from the config
 	// Connect WiFi
 	WiFi.mode(WIFI_STA);
 	WiFi.disconnect();
+	
 	char ssid[ITEA_WIFI_SSID_SIZE] = {0};
 	_config->getSSID(ssid);
 	Serial.printf("SSID: %s\n", ssid);
