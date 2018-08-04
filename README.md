@@ -14,10 +14,10 @@ iTea libraries saved in `src/libraries/iTea/` with following classes.
 
 # Devices
 
-`delayedpump` - Water level trigered relay with MQTT notification
-`catfeeder` - TODO
-`doorlocker` - TODO
-`doorwatcher` - TODO
+ * `delayedpump` - Water level trigered relay with MQTT notification
+ * `catfeeder` - TODO
+ * `doorlocker` - TODO
+ * `doorwatcher` - TODO
 
 #Open Source - MIT Software License
 
