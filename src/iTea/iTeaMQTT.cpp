@@ -37,8 +37,8 @@ uint8_t iTeaMQTTClass::setup() {
 }
 
 uint8_t iTeaMQTTClass::loop() {
-	if (_reconnect() == ITEA_STATE_MQTT_CONNECT) {
-		return ITEA_STATE_MQTT_CONNECT;
+	if (_reconnect() != ITEA_STATE_MQTT_CONNECT) {
+		return ITEA_STATE_MQTT_DISCONNECT;
 	}
 	if (!_mqtt.loop()) {
 		return ITEA_STATE_MQTT_DISCONNECT;
@@ -57,7 +57,7 @@ bool iTeaMQTTClass::publish(const char *topic, const char* payload) {
 	return _mqtt.publish(topic, payload);
 }
 
-uint8_t iTeaMQTTClass::_reconnect() {
+uint8_t iTeaMQTTClass::_reconnect() {	
 	if (_mqtt.connected()) {
 		return ITEA_STATE_MQTT_CONNECT;
 	}

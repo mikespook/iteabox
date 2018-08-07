@@ -17,6 +17,7 @@
 #include <iTeaConfig.h>
 #include <iTeaSetup.h>
 #include <iTeaWiFi.h>
+#include <iTeaMQTT.h>
 
 unsigned long pumpOnTime, pumpOffTime;
 bool pump = false;
@@ -46,6 +47,7 @@ void loop() {
 }
 
 uint8_t pumpOnHandler(uint8_t state, void *params ...) {
+  iTeaMQTT.publish("itea::pump::notice", "+");
   Serial.printf("Pump on at %d\n", pumpOnTime);
   digitalWrite(RELAY_PIN, HIGH);
   pump = true;
@@ -55,6 +57,7 @@ uint8_t pumpOnHandler(uint8_t state, void *params ...) {
 uint8_t pumpOffHandler(uint8_t state, void *params ...) {
   Serial.printf("Countdown: %d\n", millis() - pumpOffTime);
   if ((millis() - pumpOffTime) > DP_DELAY) {
+    iTeaMQTT.publish("itea:pump:pub", "-");
     Serial.printf("Pump off at %d\n", pumpOffTime); 
     digitalWrite(RELAY_PIN, LOW);
   }
@@ -75,13 +78,19 @@ uint8_t runHandler(uint8_t state, void *params ...) {
       }
       return DP_PUMPOFF;
     }
+    iTeaMQTT.loop();
   }
   return ITEA_STATE_RUN; 
+}
+
+void callback(const char* topic, const uint8_t* payload, unsigned int) {
+  iTeaHandler.call(DP_PUMPON, (void *)topic, (void *)payload);
 }
 
 uint8_t initHandler(uint8_t state, void *params ...) {  
   iTeaSetup.init(&iTeaConfig);
   iTeaWiFi.init(&iTeaConfig);
+  iTeaMQTT.init(&iTeaConfig, callback);
   return iTeaSetup.setup();  
 }
 
