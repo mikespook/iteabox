@@ -32,4 +32,4 @@
 *.app
 
 # Generated files
-src/libraries/iTea/iTeaHTML.h
+src/iTea/iTeaHTML.h
