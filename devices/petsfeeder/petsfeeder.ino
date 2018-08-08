@@ -1,17 +1,13 @@
-#define DEBUG_ESP_HTTP_CLIENT 1
-#define DEBUG_ESP_PORT 1
-#define ITEA_DEBUG 1
 #define SERIAL_SPEED 115200
 
 // pins
-#define WATER_SENSOR_PIN 4 // GPIO4, D4
+#define PIN_PAW_SWITCH 4 // GPIO4, D4
 #define RELAY_PIN 16 // GPIO16, D2
 // state
-#define DP_PUMPON 50
-#define DP_PUMPOFF 51
+#define PF_ON 50
 // config
-#define DP_DELAY 30000
-#define DP_INTERVAL 5000
+#define PF_DELAY 30000
+#define PF_INTERVAL 5000
 
 #include <iTeaHandler.h>
 #include <iTeaConfig.h>
@@ -26,7 +22,7 @@ void setup() {
   Serial.begin(SERIAL_SPEED);
   Serial.printf("Serial speed: %d\n", SERIAL_SPEED);    
   
-  pinMode(WATER_SENSOR_PIN, INPUT_PULLUP);
+  pinMode(WATER_SENSOR_PIN, INPUT);
   pinMode(RELAY_PIN, OUTPUT);
   
   Serial.printf("Load Config ... ");
@@ -67,7 +63,7 @@ uint8_t pumpOffHandler(uint8_t state, void *params ...) {
 uint8_t runHandler(uint8_t state, void *params ...) {
   if (WL_CONNECTED == iTeaWiFi.connect()) {
     delay(DP_INTERVAL);
-    if (LOW == digitalRead(WATER_SENSOR_PIN)) {
+    if (HIGH == digitalRead(WATER_SENSOR_PIN)) {
       pumpOnTime = millis();
       return DP_PUMPON;
     } else {
