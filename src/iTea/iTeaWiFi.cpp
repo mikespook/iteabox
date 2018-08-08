@@ -39,6 +39,7 @@ uint8_t iTeaWiFiClass::wait(int tick) {
 		}
 		delay(100);
 	}
+	Serial.println();
 	int status = WiFi.status();
 	switch (status) {
 		case WL_NO_SSID_AVAIL:
