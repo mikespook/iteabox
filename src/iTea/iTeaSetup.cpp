@@ -14,12 +14,12 @@ uint8_t iTeaSetupClass::setup() {
 	char ssid[ITEA_WIFI_SSID_SIZE] = {0};
 	_config->getSSID(ssid);
 	if (strlen(ssid) == 0) {
-		Serial.println("Empty SSID");
+		Serial.println("[Setup] Empty SSID");
 		goto SETUP;
 	}
 	for(int i = 0; i < 10; i ++) {
 		if(digitalRead(ITEA_SETUP_BTN) == LOW) { // shot to GND
-			Serial.println("Setup button pressed");
+			Serial.println("[Setup] Button pressed");
 			goto SETUP;
 		}
 		delay(200);
@@ -32,7 +32,7 @@ SETUP:
 	WiFi.disconnect();
 	WiFi.softAP(ITEA_WIFI_SSID, ITEA_WIFI_PASS);
 	IPAddress apIP = WiFi.softAPIP();
-	Serial.print("AP IP address: ");
+	Serial.print("[Setup] AP IP address: ");
 	Serial.print(apIP);
 	//start HTTP service
 	std::function<void(void)> hRoot = [&]{this->_handleRoot();};
@@ -57,7 +57,7 @@ uint8_t iTeaSetupClass::loop() {
 }
 
 void iTeaSetupClass::_handleRoot() {
-	Serial.println("Root handle");
+	Serial.println("[Setup] Root handle");
 	String page = String(ITEA_SETUP_PAGE_ROOT);
 	char field[ITEA_EEPROM_SIZE] = {0};
 	_config->getSSID(field);
@@ -85,7 +85,7 @@ void iTeaSetupClass::_handleRoot() {
 }
 
 void iTeaSetupClass::_handlePost() {
-	Serial.println("Set handle");
+	Serial.println("[Setup] Save handle");
 	_server.sendHeader("Location", "/");
 	_server.send (302, "text/plain", "Config updated...\n\n");
 
@@ -103,7 +103,7 @@ void iTeaSetupClass::_handlePost() {
 }
 
 void iTeaSetupClass::_handleReset() {
-	Serial.println("Reset handle");
+	Serial.println("[Setup] Reset handle");
 	_server.send (200, "text/html",
 			redirectPage("3", "/", "Resetting..."));
 	_config->clean();
@@ -111,7 +111,7 @@ void iTeaSetupClass::_handleReset() {
 }
 
 void iTeaSetupClass::_handleRestart() {
-	Serial.println("Restart handle");
+	Serial.println("[Setup] Restart handle");
 	_server.send (200, "text/html",
 			redirectPage("30", "javascript:window.close();", "Restarting..."));
 	ESP.restart();
@@ -119,12 +119,12 @@ void iTeaSetupClass::_handleRestart() {
 }
 
 void iTeaSetupClass::_handleDebug() {
-	Serial.println("Debug handle");
+	Serial.println("[Setup] Debug handle");
 	_server.send (200, "text/plain", String(_config->debug()));
 }
 
 void iTeaSetupClass::_handleNotFound() {
-	Serial.println("Not Found handle");
+	Serial.println("[Setup] Not Found handle");
 	_server.send ( 404, "text/html",
 			redirectPage("5", "/", "File Not Found"));
 }
