@@ -1,6 +1,3 @@
-#define DEBUG_ESP_HTTP_CLIENT 1
-#define DEBUG_ESP_PORT 1
-#define ITEA_DEBUG 1
 #define SERIAL_SPEED 115200
 
 // pins
