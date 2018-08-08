@@ -4,9 +4,13 @@
 iTeaMQTTClass::iTeaMQTTClass() {
 }
 
-void iTeaMQTTClass::init(iTeaConfigClass *config, CallbackHandler callback) {
+void iTeaMQTTClass::init(iTeaConfigClass *config) {
 	_config = config;
+}
+
+void iTeaMQTTClass::subscribe(const char *subtopic, CallbackHandler callback) {
 	_callback = callback;
+	strcpy(_subTopic, subtopic);
 }
 
 uint8_t iTeaMQTTClass::setup() {
@@ -20,9 +24,6 @@ uint8_t iTeaMQTTClass::setup() {
 	char tick[ITEA_MQTT_HBTICK_SIZE + 1] = {0};
 	_config->getMQTTHeartbeatTick(tick);
 	_heartbeatTick = atoi(tick);
-
-	// topics
-	_config->getMQTTTopic(_subTopic);
 
 	_config->getMQTTClientId(_clientId);
 	_config->getMQTTUser(_user);

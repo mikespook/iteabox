@@ -73,8 +73,6 @@ void iTeaSetupClass::_handleRoot() {
 	page.replace("$MQTTUSER$", String(field));
 	_config->getMQTTPass(field);
 	page.replace("$MQTTPASS$", String(field));
-	_config->getMQTTTopic(field);
-	page.replace("$MQTTTOPIC$", String(field));
 	_config->getMQTTTopicHeartbeat(field);
 	page.replace("$MQTTTOPICHEARTBEAT$", String(field));
 	_config->getMQTTHeartbeatTick(field);
@@ -95,7 +93,6 @@ void iTeaSetupClass::_handlePost() {
 	_config->setMQTTPort(_server.arg("mqtt-port").c_str());
 	_config->setMQTTUser(_server.arg("mqtt-user").c_str());
 	_config->setMQTTPass(_server.arg("mqtt-pass").c_str());
-	_config->setMQTTTopic(_server.arg("mqtt-topic").c_str());
 	_config->setMQTTTopicHeartbeat(_server.arg("mqtt-topic-heartbeat").c_str());
 	_config->setMQTTHeartbeatTick(_server.arg("mqtt-heartbeat-tick").c_str());
 	_config->setMQTTClientId(_server.arg("mqtt-client-id").c_str());

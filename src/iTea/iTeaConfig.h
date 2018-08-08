@@ -23,13 +23,10 @@
 // pass
 #define ITEA_MQTT_PASS_OFFSET ITEA_MQTT_USER_OFFSET + ITEA_MQTT_USER_SIZE
 #define ITEA_MQTT_PASS_SIZE 32
-// topic
-#define ITEA_MQTT_TOPIC_DEFAULT "itea:topic:sub"
-#define ITEA_MQTT_TOPIC_OFFSET ITEA_MQTT_PASS_OFFSET + ITEA_MQTT_PASS_SIZE
-#define ITEA_MQTT_TOPIC_SIZE 32
 // heartbeat
+#define ITEA_MQTT_TOPIC_SIZE 32
 #define ITEA_MQTT_TOPIC_HEARTBEAT_DEFAULT "itea:heartbeat:pub"
-#define ITEA_MQTT_TOPIC_HEARTBEAT_OFFSET ITEA_MQTT_TOPIC_OFFSET + ITEA_MQTT_TOPIC_SIZE
+#define ITEA_MQTT_TOPIC_HEARTBEAT_OFFSET ITEA_MQTT_PASS_OFFSET + ITEA_MQTT_PASS_SIZE
 #define ITEA_MQTT_HBTICK_OFFSET ITEA_MQTT_TOPIC_HEARTBEAT_OFFSET + ITEA_MQTT_TOPIC_SIZE
 #define ITEA_MQTT_HBTICK_SIZE 5
 #define ITEA_MQTT_HBTICK_DEFAULT "60"
@@ -62,7 +59,6 @@ class iTeaConfigClass {
 		void setMQTTPort(const char*);
 		void setMQTTUser(const char*);
 		void setMQTTPass(const char*);
-		void setMQTTTopic(const char*);
 		void setMQTTTopicHeartbeat(const char*);
 		void setMQTTHeartbeatTick(const char*);
 		void setMQTTClientId(const char*);
@@ -74,7 +70,6 @@ class iTeaConfigClass {
 		void getMQTTPort(char *);
 		void getMQTTUser(char *);
 		void getMQTTPass(char *);
-		void getMQTTTopic(char*);
 		void getMQTTTopicHeartbeat(char *);
 		void getMQTTHeartbeatTick(char *);
 		void getMQTTClientId(char*);
@@ -87,7 +82,6 @@ class iTeaConfigClass {
 		char _mqttPort[ITEA_MQTT_PASS_SIZE + 1] = {0};	
 		char _mqttUser[ITEA_MQTT_USER_SIZE + 1] = {0};
 		char _mqttPass[ITEA_MQTT_PASS_SIZE + 1] = {0};
-		char _mqttTopic[ITEA_MQTT_TOPIC_SIZE + 1] = {0};
 		char _mqttTopicHeartbeat[ITEA_MQTT_TOPIC_SIZE + 1] = {0};	
 		char _mqttHeartbeatTick[ITEA_MQTT_HBTICK_SIZE + 1] = {0};	
 		char _mqttClientId[ITEA_MQTT_CLIENTID_SIZE + 1] = {0};

@@ -44,7 +44,7 @@ void loop() {
 }
 
 uint8_t pumpOnHandler(uint8_t state, void *params ...) {
-  iTeaMQTT.publish("itea::pump::notice", "+");
+  iTeaMQTT.publish("itea:pump:pub", "+");
   Serial.printf("Pump on at %d\n", pumpOnTime);
   digitalWrite(RELAY_PIN, HIGH);
   pump = true;
@@ -87,7 +87,8 @@ void callback(const char* topic, const uint8_t* payload, unsigned int) {
 uint8_t initHandler(uint8_t state, void *params ...) {  
   iTeaSetup.init(&iTeaConfig);
   iTeaWiFi.init(&iTeaConfig);
-  iTeaMQTT.init(&iTeaConfig, callback);
+  iTeaMQTT.init(&iTeaConfig);
+  iTeaMQTT.subscribe("itea:pump:sub", callback);
   return iTeaSetup.setup();  
 }
 

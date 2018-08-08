@@ -33,8 +33,7 @@ void setup() {
   iTeaHandler.add(ITEA_STATE_INIT, initHandler);
   iTeaHandler.add(ITEA_STATE_SETUP, setupHandler);
   iTeaHandler.add(ITEA_STATE_RUN, runHandler);
-  iTeaHandler.add(DP_PUMPON, pumpOnHandler);
-  iTeaHandler.add(DP_PUMPOFF, pumpOffHandler);
+  iTeaHandler.add(PF_ON, feedHandler);  
   Serial.println("Done");
 }
 
@@ -42,8 +41,8 @@ void loop() {
   iTeaHandler.loop(NULL);
 }
 
-uint8_t pumpOnHandler(uint8_t state, void *params ...) {
-  iTeaMQTT.publish("itea::pump::notice", "+");
+uint8_t feedHandler(uint8_t state, void *params ...) {
+  iTeaMQTT.publish("itea::pub", "+");
   Serial.printf("Pump on at %d\n", pumpOnTime);
   digitalWrite(RELAY_PIN, HIGH);
   pump = true;

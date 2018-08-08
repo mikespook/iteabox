@@ -16,7 +16,8 @@ typedef void (*CallbackHandler)(const char*, const uint8_t*, unsigned int);
 class iTeaMQTTClass {
 	public:
 		iTeaMQTTClass();
-		void init(iTeaConfigClass *config, CallbackHandler callback);
+		void init(iTeaConfigClass *config);
+		void subscribe(const char*subtopic, CallbackHandler callback);
 		
 		uint8_t setup();
 		uint8_t loop();

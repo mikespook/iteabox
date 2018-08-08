@@ -28,14 +28,10 @@ void iTeaConfigClass::load() {
 	LOAD(_mqttPort, ITEA_MQTT_PORT_OFFSET, ITEA_MQTT_PORT_SIZE);
 	LOAD(_mqttUser, ITEA_MQTT_USER_OFFSET, ITEA_MQTT_USER_SIZE);
 	LOAD(_mqttPass, ITEA_MQTT_PASS_OFFSET, ITEA_MQTT_PASS_SIZE);
-	LOAD(_mqttTopic, ITEA_MQTT_TOPIC_OFFSET, ITEA_MQTT_TOPIC_SIZE);
 	LOAD(_mqttTopicHeartbeat, ITEA_MQTT_TOPIC_HEARTBEAT_OFFSET, ITEA_MQTT_TOPIC_SIZE);
 	LOAD(_mqttHeartbeatTick, ITEA_MQTT_HBTICK_OFFSET, ITEA_MQTT_HBTICK_SIZE);
 	LOAD(_mqttClientId, ITEA_MQTT_CLIENTID_OFFSET, ITEA_MQTT_CLIENTID_SIZE);
 
-	if (strlen(_mqttTopic) == 0) {
-		sprintf(_mqttTopic, ITEA_MQTT_TOPIC_DEFAULT);
-	}
 	if (strlen(_mqttTopicHeartbeat) == 0) {
 		sprintf(_mqttTopicHeartbeat, ITEA_MQTT_TOPIC_HEARTBEAT_DEFAULT);
 	}
@@ -57,7 +53,6 @@ void iTeaConfigClass::dump() {
 	DUMP(_mqttPort, ITEA_MQTT_PORT_OFFSET, ITEA_MQTT_PORT_SIZE);
 	DUMP(_mqttUser, ITEA_MQTT_USER_OFFSET, ITEA_MQTT_USER_SIZE);
 	DUMP(_mqttPass, ITEA_MQTT_PASS_OFFSET, ITEA_MQTT_PASS_SIZE);
-	DUMP(_mqttTopic, ITEA_MQTT_TOPIC_OFFSET, ITEA_MQTT_TOPIC_SIZE);
 	DUMP(_mqttTopicHeartbeat, ITEA_MQTT_TOPIC_HEARTBEAT_OFFSET, ITEA_MQTT_TOPIC_SIZE);
 	DUMP(_mqttHeartbeatTick, ITEA_MQTT_HBTICK_OFFSET, ITEA_MQTT_HBTICK_SIZE);
 	DUMP(_mqttClientId, ITEA_MQTT_CLIENTID_OFFSET, ITEA_MQTT_CLIENTID_SIZE);
@@ -70,7 +65,6 @@ SET(MQTTAddr, mqttAddr, ITEA_MQTT_ADDR_SIZE);
 SET(MQTTPort, mqttPort, ITEA_MQTT_PORT_SIZE);
 SET(MQTTUser, mqttUser, ITEA_MQTT_USER_SIZE);
 SET(MQTTPass, mqttPass, ITEA_MQTT_PASS_SIZE);
-SET(MQTTTopic, mqttTopic, ITEA_MQTT_TOPIC_SIZE);
 SET(MQTTTopicHeartbeat, mqttTopicHeartbeat, ITEA_MQTT_TOPIC_SIZE);
 SET(MQTTHeartbeatTick, mqttHeartbeatTick, ITEA_MQTT_HBTICK_SIZE);
 SET(MQTTClientId, mqttClientId, ITEA_MQTT_CLIENTID_SIZE);
@@ -81,7 +75,6 @@ GET(MQTTAddr, mqttAddr);
 GET(MQTTPort, mqttPort);
 GET(MQTTUser, mqttUser);
 GET(MQTTPass, mqttPass);
-GET(MQTTTopic, mqttTopic);
 GET(MQTTTopicHeartbeat, mqttTopicHeartbeat);
 GET(MQTTHeartbeatTick, mqttHeartbeatTick);
 GET(MQTTClientId, mqttClientId);
