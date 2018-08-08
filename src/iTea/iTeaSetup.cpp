@@ -2,7 +2,7 @@
 
 // Public
 iTeaSetupClass::iTeaSetupClass() {
-	pinMode(ITEA_SETUP_BTN, INPUT);
+	pinMode(ITEA_SETUP_BTN, INPUT_PULLUP);
 }
 
 void iTeaSetupClass::init(iTeaConfigClass *config) {
@@ -18,7 +18,7 @@ uint8_t iTeaSetupClass::setup() {
 		goto SETUP;
 	}
 	for(int i = 0; i < 10; i ++) {
-		if(digitalRead(ITEA_SETUP_BTN) == HIGH) {
+		if(digitalRead(ITEA_SETUP_BTN) == LOW) { // shot to GND
 			Serial.println("Setup button pressed");
 			goto SETUP;
 		}
