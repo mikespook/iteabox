@@ -1,5 +1,5 @@
 # iTeaBox
-This is the repo for my ESP8266 based devices.
+This is the repo for the ESP8266 based devices.
 
 # Libraries
 
@@ -15,7 +15,7 @@ iTea libraries saved in `src/libraries/iTea/` with following classes.
 # Devices
 
  * `delayedpump` - Water level trigered relay with MQTT notification
- * `catfeeder` - TODO
+ * `petsfeeder` - TODO
  * `doorlocker` - TODO
  * `doorwatcher` - TODO
 
