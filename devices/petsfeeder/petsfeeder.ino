@@ -63,7 +63,7 @@ uint8_t feedHandler(uint8_t state, void *params ...) {
 uint8_t runHandler(uint8_t state, void *params ...) {
   if (WL_CONNECTED == iTeaWiFi.connect()) {
     delay(PF_INTERVAL);
-    if (HIGH == digitalRead(PIN_PAW_SWITCH)) {
+    if (LOW == digitalRead(PIN_PAW_SWITCH)) {
       return PF_HOLDER_RELEASE;
     }
     iTeaMQTT.loop();
