@@ -15,7 +15,7 @@ iTea libraries saved in `src/libraries/iTea/` with following classes.
 # Devices
 
  * `delayedpump` - Water level trigered relay with MQTT notification
- * `petsfeeder` - TODO
+ * `petsfeeder` - Feed pets with `paw-controled` switch or MQTT remove control
  * `doorlocker` - TODO
  * `doorwatcher` - TODO
 
