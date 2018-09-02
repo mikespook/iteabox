@@ -25,6 +25,7 @@ void setup() {
   
   pinMode(WATER_SENSOR_PIN, INPUT_PULLUP);
   pinMode(RELAY_PIN, OUTPUT);
+  digitalWrite(RELAY_PIN, HIGH);
   
   Serial.printf("Load Config ... ");
   iTeaConfig.load();  
@@ -46,7 +47,7 @@ void loop() {
 uint8_t pumpOnHandler(uint8_t state, void *params ...) {
   iTeaMQTT.publish("itea:pump:pub", "+");
   Serial.printf("Pump on at %d\n", pumpOnTime);
-  digitalWrite(RELAY_PIN, HIGH);
+  digitalWrite(RELAY_PIN, LOW);
   pump = true;
   return ITEA_STATE_RUN;
 }
@@ -56,7 +57,7 @@ uint8_t pumpOffHandler(uint8_t state, void *params ...) {
   if ((millis() - pumpOffTime) > DP_DELAY) {
     iTeaMQTT.publish("itea:pump:pub", "-");
     Serial.printf("Pump off at %d\n", pumpOffTime); 
-    digitalWrite(RELAY_PIN, LOW);
+    digitalWrite(RELAY_PIN, HIGH);
   }
   return ITEA_STATE_RUN;
 }
