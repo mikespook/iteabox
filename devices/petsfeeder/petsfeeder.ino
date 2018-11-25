@@ -50,15 +50,11 @@ void loop() {
 }
 
 uint8_t feedHandler(uint8_t state, void *params ...) {
-  Serial.printf("%d", steps);
-  Serial.println("Step");   
   if (steps == PF_STEPPER_BEGIN) {
     iTeaMQTT.publish("itea:petsfeeder:pub", "+"); 
     Serial.printf("Feed"); 
-  }
-  Serial.printf("step: %d, begin: %d, end: %d\n", steps, PF_STEPPER_BEGIN, PF_STEPPER_END); 
+  } 
   if (steps < PF_STEPPER_END ) {
-  Serial.println("1");
     myStepper.step(PF_STEPPER_STEP);
     steps ++;
     return PF_FEED;
