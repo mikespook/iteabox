@@ -18,6 +18,7 @@ uint8_t iTeaHandlerClass::loop(void *params ...) {
 }
 
 uint8_t iTeaHandlerClass::call(uint8_t state, void *params ...) {
+	// TODO buggy calling directly
 	_state = _states[state](state, params);
 	return _state;
 }

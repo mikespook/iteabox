@@ -90,7 +90,12 @@ uint8_t initHandler(uint8_t state, void *params ...) {
   iTeaWiFi.init(&iTeaConfig);
   iTeaMQTT.init(&iTeaConfig);
   iTeaMQTT.subscribe("itea:pump:sub", callback);
-  return iTeaSetup.setup();  
+  uint8_t r = iTeaSetup.setup();
+  if (r != ITEA_STATE_SETUP) {
+    iTeaWiFi.connect();
+    iTeaMQTT.setup();
+  } 
+  return r;  
 }
 
 uint8_t setupHandler(uint8_t state, void *params ...) {  
