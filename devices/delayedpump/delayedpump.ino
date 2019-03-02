@@ -1,3 +1,9 @@
+#include <iTeaHandler.h>
+#include <iTeaConfig.h>
+#include <iTeaSetup.h>
+#include <iTeaWiFi.h>
+#include <iTeaMQTT.h>
+
 #define SERIAL_SPEED 115200
 
 // pins
@@ -10,11 +16,7 @@
 #define DP_DELAY 30000
 #define DP_INTERVAL 5000
 
-#include <iTeaHandler.h>
-#include <iTeaConfig.h>
-#include <iTeaSetup.h>
-#include <iTeaWiFi.h>
-#include <iTeaMQTT.h>
+
 
 unsigned long pumpOnTime, pumpOffTime;
 bool pump = false;
@@ -68,12 +70,10 @@ uint8_t runHandler(uint8_t state, void *params ...) {
     if (LOW == digitalRead(WATER_SENSOR_PIN)) {
       pumpOnTime = millis();
       return DP_PUMPON;
-    } else {
-      if (pump == true) {
-        pump = false;
-        pumpOffTime = millis();
-        Serial.printf("Off singal at %d\n", pumpOffTime);
-      }
+    } else if (pump == true) {
+      pump = false;
+      pumpOffTime = millis();
+      Serial.printf("Off singal at %d\n", pumpOffTime);
       return DP_PUMPOFF;
     }
     iTeaMQTT.loop();
@@ -89,13 +89,16 @@ uint8_t initHandler(uint8_t state, void *params ...) {
   iTeaSetup.init(&iTeaConfig);
   iTeaWiFi.init(&iTeaConfig);
   iTeaMQTT.init(&iTeaConfig);
-  iTeaMQTT.subscribe("itea:pump:sub", callback);
   uint8_t r = iTeaSetup.setup();
   if (r != ITEA_STATE_SETUP) {
     iTeaWiFi.connect();
-    iTeaMQTT.setup();
+    iTeaMQTT.subscribe("itea:pump:sub", callback);
+    //r = iTeaMQTT.setup();
+    if (r != ITEA_STATE_MQTT_CONNECT) {
+      Serial.printf("MQTT Connection Error %d\n", iTeaMQTT.state());
+    }
   } 
-  return r;  
+  return ITEA_STATE_RUN;  
 }
 
 uint8_t setupHandler(uint8_t state, void *params ...) {  

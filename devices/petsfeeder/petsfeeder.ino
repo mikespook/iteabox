@@ -15,8 +15,8 @@
 #define PF_INTERVAL 100
 #define PF_STEP_INTERVAL 5
 #define PF_STEPPER_BEGIN 0
-#define PF_STEPPER_END 2200
-#define PF_STEPPER_STEP 1
+#define PF_STEPPER_END 64
+#define PF_STEPPER_STEP 64
 
 
 
@@ -62,11 +62,11 @@ uint8_t feedHandler(uint8_t state, void *params ...) {
   steps = PF_STEPPER_BEGIN;
   Serial.println("...Done");
   mqttFeed = false;
+  pinMode(PIN_PAW_SWITCH, INPUT_PULLUP);
   return ITEA_STATE_RUN;
 }
 
 uint8_t runHandler(uint8_t state, void *params ...) {
-  iTeaWiFi.connect();
   if (LOW == digitalRead(PIN_PAW_SWITCH)) {
     Serial.printf("Feed at %d\n", millis());
     return PF_FEED;
@@ -89,11 +89,13 @@ uint8_t initHandler(uint8_t state, void *params ...) {
   iTeaSetup.init(&iTeaConfig);
   iTeaWiFi.init(&iTeaConfig);
   iTeaMQTT.init(&iTeaConfig);
-  iTeaMQTT.subscribe("itea:petsfeeder:sub", callback);
   uint8_t r = iTeaSetup.setup();
+  Serial.println(r); 
   if (r != ITEA_STATE_SETUP) {
     iTeaWiFi.connect();
+    iTeaMQTT.subscribe("itea:petsfeeder:sub", callback);    
     iTeaMQTT.setup();
+    Serial.println("Sub");  
   } 
   return r;
 }

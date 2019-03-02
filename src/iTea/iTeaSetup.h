@@ -40,4 +40,5 @@ class iTeaSetupClass {
 };
 
 static iTeaSetupClass iTeaSetup;
+void setClock();
 #endif // ITEA_SETUP
