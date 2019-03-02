@@ -57,6 +57,7 @@ uint8_t pumpOnHandler(uint8_t state, void *params ...) {
 uint8_t pumpOffHandler(uint8_t state, void *params ...) {
   Serial.printf("Countdown: %d\n", millis() - pumpOffTime);
   if ((millis() - pumpOffTime) > DP_DELAY) {
+    pump = false;
     iTeaMQTT.publish("itea:pump:pub", "-");
     Serial.printf("Pump off at %d\n", pumpOffTime); 
     digitalWrite(RELAY_PIN, HIGH);
@@ -65,20 +66,23 @@ uint8_t pumpOffHandler(uint8_t state, void *params ...) {
 }
 
 uint8_t runHandler(uint8_t state, void *params ...) {
+  uint8_t r = ITEA_STATE_RUN;
   if (WL_CONNECTED == iTeaWiFi.connect()) {
     delay(DP_INTERVAL);
     if (LOW == digitalRead(WATER_SENSOR_PIN)) {
       pumpOnTime = millis();
-      return DP_PUMPON;
+      r = DP_PUMPON;
     } else if (pump == true) {
-      pump = false;
-      pumpOffTime = millis();
-      Serial.printf("Off singal at %d\n", pumpOffTime);
-      return DP_PUMPOFF;
+      if (pumpOnTime != 0) {
+        pumpOffTime = millis();
+        pumpOnTime = 0;
+        Serial.printf("Off singal at %d\n", pumpOffTime);
+      }
+      r = DP_PUMPOFF;
     }
     iTeaMQTT.loop();
   }
-  return ITEA_STATE_RUN; 
+  return r; 
 }
 
 void callback(const char* topic, const uint8_t* payload, unsigned int) {
@@ -86,6 +90,7 @@ void callback(const char* topic, const uint8_t* payload, unsigned int) {
 }
 
 uint8_t initHandler(uint8_t state, void *params ...) {  
+  Serial.println("Init...");
   iTeaSetup.init(&iTeaConfig);
   iTeaWiFi.init(&iTeaConfig);
   iTeaMQTT.init(&iTeaConfig);
@@ -93,7 +98,7 @@ uint8_t initHandler(uint8_t state, void *params ...) {
   if (r != ITEA_STATE_SETUP) {
     iTeaWiFi.connect();
     iTeaMQTT.subscribe("itea:pump:sub", callback);
-    //r = iTeaMQTT.setup();
+    r = iTeaMQTT.setup();
     if (r != ITEA_STATE_MQTT_CONNECT) {
       Serial.printf("MQTT Connection Error %d\n", iTeaMQTT.state());
     }
