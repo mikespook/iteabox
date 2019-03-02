@@ -45,4 +45,5 @@ class iTeaMQTTClass {
 };
 
 static iTeaMQTTClass iTeaMQTT;
+void setClock();
 #endif // ITEA_MQTT
