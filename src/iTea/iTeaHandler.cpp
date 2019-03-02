@@ -6,6 +6,7 @@ iTeaHandlerClass::iTeaHandlerClass() {
 
 uint8_t iTeaHandlerClass::setup(uint8_t initState /* = AP_STATE_NONE*/) {
 	_state = initState;
+	add(ITEA_STATE_ERROR, notfoundHandler);
 	return _state;
 }
 
@@ -29,4 +30,9 @@ void iTeaHandlerClass::add(uint8_t state, StateHandler f) {
 
 void iTeaHandlerClass::setState(uint8_t state) {
 	_state = state;
+}
+
+uint8_t notfoundHandler(uint8_t state, void *params ...) {
+  Serial.printf("State Handler Not Found: %d\n", state);
+  return ITEA_STATE_RUN; 
 }

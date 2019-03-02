@@ -3,9 +3,9 @@
 
 #include <SPI.h>
 
-#define ITEA_STATE_ERROR -1
-#define ITEA_STATE_INIT 0
-#define ITEA_STATE_RUN 1
+#define ITEA_STATE_ERROR 0 
+#define ITEA_STATE_INIT 1
+#define ITEA_STATE_RUN 2
 
 // handler function 
 typedef uint8_t (*StateHandler)(uint8_t, void * ...);
@@ -27,4 +27,5 @@ class iTeaHandlerClass {
 };
 
 static iTeaHandlerClass iTeaHandler;
+uint8_t notfoundHandler(uint8_t state, void *params ...); 
 #endif // ITEA_HANDLER

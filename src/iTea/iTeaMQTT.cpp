@@ -1,4 +1,5 @@
 #include "iTeaMQTT.h"
+#include "ca.h"
 
 // Public
 iTeaMQTTClass::iTeaMQTTClass() {
@@ -14,11 +15,16 @@ void iTeaMQTTClass::subscribe(const char *subtopic, CallbackHandler callback) {
 }
 
 uint8_t iTeaMQTTClass::setup() {
+	_client.setInsecure();
+    X509List x509(rootCA, rootCA_len);
+    _client.setTrustAnchors(&x509);
 	char addr[ITEA_MQTT_ADDR_SIZE + 1] = {0};
 	_config->getMQTTAddr(addr);
 	char port[ITEA_MQTT_PORT_SIZE + 1] = {0};
 	_config->getMQTTPort(port);	
 	_mqtt.setServer(addr, atoi(port));
+	Serial.printf("Server: %s(%d)\n", addr, atoi(port));
+	
 	// heartbeat
 	_config->getMQTTTopicHeartbeat(_pubTopicHeartbeat);
 	char tick[ITEA_MQTT_HBTICK_SIZE + 1] = {0};
@@ -26,9 +32,11 @@ uint8_t iTeaMQTTClass::setup() {
 	_heartbeatTick = atoi(tick);
 
 	_config->getMQTTClientId(_clientId);
+	Serial.printf("Client ID: %s\n", _clientId);
 	_config->getMQTTUser(_user);
 	_config->getMQTTPass(_pass);
-
+	Serial.printf("User: %s %s\n", _user, _pass);
+	
 	_mqtt.setCallback([this](char* topic, uint8_t* payload, unsigned int length){
 		if (_callback != NULL) {
 			_callback(topic, payload, length);
@@ -39,6 +47,9 @@ uint8_t iTeaMQTTClass::setup() {
 
 uint8_t iTeaMQTTClass::loop() {
 	if (_reconnect() != ITEA_STATE_MQTT_CONNECT) {
+		return ITEA_STATE_MQTT_DISCONNECT;
+	}
+	if (_mqtt.state() != MQTT_CONNECTED) {
 		return ITEA_STATE_MQTT_DISCONNECT;
 	}
 	if (!_mqtt.loop()) {
@@ -56,6 +67,10 @@ uint8_t iTeaMQTTClass::loop() {
 
 bool iTeaMQTTClass::publish(const char *topic, const char* payload) {
 	return _mqtt.publish(topic, payload);
+}
+
+int iTeaMQTTClass::state() {
+	return _mqtt.state();
 }
 
 uint8_t iTeaMQTTClass::_reconnect() {	

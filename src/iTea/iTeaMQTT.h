@@ -21,6 +21,7 @@ class iTeaMQTTClass {
 		
 		uint8_t setup();
 		uint8_t loop();
+		int state();
 
 		bool publish(const char* topic, const char* payload);
 	

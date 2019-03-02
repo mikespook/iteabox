@@ -12,16 +12,16 @@ uint8_t iTeaWiFiClass::connect() {
 	if (WiFi.isConnected()) {
 		return WL_CONNECTED;
 	}
-	// read SSID and Password from the config
 	// Connect WiFi
-	WiFi.mode(WIFI_STA);
 	WiFi.disconnect();
 	
+	// read SSID and Password from the config
 	char ssid[ITEA_WIFI_SSID_SIZE] = {0};
 	_config->getSSID(ssid);
 	char pass[ITEA_WIFI_PASS_SIZE] = {0};
 	_config->getPass(pass);
 	Serial.printf("[WiFi] Connecting: SSID=%s ", ssid);	
+	WiFi.mode(WIFI_STA);
 	WiFi.begin(ssid, pass);
 	return wait(300);
 }

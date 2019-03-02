@@ -12,7 +12,7 @@
 #include "iTeaHTML.h"
 
 // #define ITEA_SETUP_BTN 15 // D10
-#define ITEA_SETUP_BTN 5 // D3
+#define ITEA_SETUP_BTN 5 // R1:D3 R2:D1
 #define ITEA_STATE_SETUP 5
 
 
