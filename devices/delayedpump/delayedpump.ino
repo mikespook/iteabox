@@ -7,8 +7,8 @@
 #define SERIAL_SPEED 115200
 
 // pins
-#define WATER_SENSOR_PIN 4 // GPIO4, D4
-#define RELAY_PIN 16 // GPIO16, D2
+#define WATER_SENSOR_PIN 5 // GPIO5, D3
+#define RELAY_PIN 4 // GPIO4, D4
 // state
 #define DP_PUMPON 50
 #define DP_PUMPOFF 51
@@ -26,8 +26,10 @@ void setup() {
   Serial.printf("Serial speed: %d\n", SERIAL_SPEED);    
   
   pinMode(WATER_SENSOR_PIN, INPUT_PULLUP);
+  int sensor = digitalRead(WATER_SENSOR_PIN);
+  Serial.printf("Sensor: %d\n", sensor);
   pinMode(RELAY_PIN, OUTPUT);
-  digitalWrite(RELAY_PIN, HIGH);
+  digitalWrite(RELAY_PIN, LOW);
   
   Serial.printf("Load Config ... ");
   iTeaConfig.load();  
@@ -49,7 +51,7 @@ void loop() {
 uint8_t pumpOnHandler(uint8_t state, void *params ...) {
   iTeaMQTT.publish("itea:pump:pub", "+");
   Serial.printf("Pump on at %d\n", pumpOnTime);
-  digitalWrite(RELAY_PIN, LOW);
+  digitalWrite(RELAY_PIN, HIGH);
   pump = true;
   return ITEA_STATE_RUN;
 }
@@ -60,7 +62,7 @@ uint8_t pumpOffHandler(uint8_t state, void *params ...) {
     pump = false;
     iTeaMQTT.publish("itea:pump:pub", "-");
     Serial.printf("Pump off at %d\n", pumpOffTime); 
-    digitalWrite(RELAY_PIN, HIGH);
+    digitalWrite(RELAY_PIN, LOW);
   }
   return ITEA_STATE_RUN;
 }
@@ -69,7 +71,9 @@ uint8_t runHandler(uint8_t state, void *params ...) {
   uint8_t r = ITEA_STATE_RUN;
   if (WL_CONNECTED == iTeaWiFi.connect()) {
     delay(DP_INTERVAL);
-    if (LOW == digitalRead(WATER_SENSOR_PIN)) {
+    int sensor = digitalRead(WATER_SENSOR_PIN);
+    Serial.printf("Sensor: %d\n", sensor);
+    if (LOW == sensor) {
       pumpOnTime = millis();
       r = DP_PUMPON;
     } else if (pump == true) {
