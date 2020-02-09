@@ -7,7 +7,7 @@
 #define SERIAL_SPEED 115200
 
 // pins
-#define WATER_SENSOR_PIN 5 // GPIO5, D3
+#define WATER_SENSOR_PIN 2 // GPIO2, D9
 #define RELAY_PIN 4 // GPIO4, D4
 // state
 #define DP_PUMPON 50
