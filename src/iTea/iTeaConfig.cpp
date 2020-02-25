@@ -18,6 +18,7 @@
 iTeaConfigClass::iTeaConfigClass() {
 	randomSeed(analogRead(ITEA_RAND_PIN));
 	EEPROM.begin(ITEA_EEPROM_SIZE);
+	load();
 }
 
 void iTeaConfigClass::load() {
