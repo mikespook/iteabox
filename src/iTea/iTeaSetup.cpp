@@ -33,7 +33,7 @@ SETUP:
 	WiFi.softAP(ITEA_WIFI_SSID, ITEA_WIFI_PASS);
 	IPAddress apIP = WiFi.softAPIP();
 	Serial.print("[Setup] AP IP address: ");
-	Serial.print(apIP);
+	Serial.println(apIP);
 	//start HTTP service
 	std::function<void(void)> hRoot = [&]{this->_handleRoot();};
 	_server.on("/", hRoot);
