@@ -5,7 +5,9 @@
 #define ITEA_WIFI_PASS ""
 
 // WiFi
-#define ITEA_WIFI_SSID_OFFSET	0
+#define ITEA_WIFI_IS_WPS_OFFSET 0
+#define ITEA_WIFI_IS_WPS_SIZE 1
+#define ITEA_WIFI_SSID_OFFSET	1
 #define ITEA_WIFI_SSID_SIZE	32
 #define ITEA_WIFI_PASS_OFFSET ITEA_WIFI_SSID_OFFSET + ITEA_WIFI_SSID_SIZE
 #define ITEA_WIFI_PASS_SIZE	64
@@ -52,6 +54,9 @@ class iTeaConfigClass {
 		void dump();
 		String debug();
 
+		char isWPS();
+		void setIsWPS(const char is);
+
 		void setSSID(const char*);
 		void setPass(const char*);
 	
@@ -75,6 +80,7 @@ class iTeaConfigClass {
 		void getMQTTClientId(char*);
 
 	private:
+		char _isWPS = 0;
 		char _wifiSSID[ITEA_WIFI_SSID_SIZE + 1] = {0};
 		char _wifiPass[ITEA_WIFI_PASS_SIZE + 1] = {0};
 

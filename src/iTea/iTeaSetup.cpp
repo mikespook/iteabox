@@ -11,6 +11,9 @@ void iTeaSetupClass::init(iTeaConfigClass *config) {
 
 uint8_t iTeaSetupClass::setup() {
 	// read the eeprom
+	if (_config->isWPS() == 1) {
+		return ITEA_STATE_RUN;
+	}
 	char ssid[ITEA_WIFI_SSID_SIZE] = {0};
 	_config->getSSID(ssid);
 	if (strlen(ssid) == 0) {
@@ -60,6 +63,11 @@ void iTeaSetupClass::_handleRoot() {
 	Serial.println("[Setup] Root handle");
 	String page = String(ITEA_SETUP_PAGE_ROOT);
 	char field[ITEA_EEPROM_SIZE] = {0};
+	if (_config->isWPS() == 1) {
+		page.replace("$IS_WPS$", "true");
+	} else {
+		page.replace("$IS_WPS$", "false");
+	}
 	_config->getSSID(field);
 	page.replace("$SSID$", String(field));
 	_config->getPass(field);
@@ -87,6 +95,7 @@ void iTeaSetupClass::_handlePost() {
 	_server.sendHeader("Location", "/");
 	_server.send (302, "text/plain", "Config updated...\n\n");
 
+	_config->setIsWPS(_server.arg("is_wps") == "1" ? 1 : 0);	
 	_config->setSSID(_server.arg("ssid").c_str());
 	_config->setPass(_server.arg("pass").c_str());
 	_config->setMQTTAddr(_server.arg("mqtt-addr").c_str());

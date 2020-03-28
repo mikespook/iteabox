@@ -19,16 +19,27 @@ form > div > input {
 .nav {
 	margin: 0 16px;
 }
+.radio {display: flex;}
+.radio > div {flex-basis: 16%;}
+.radio > input {flex-basis: 4%;}
+.radio > label {flex-basis: 6%;}
 		</style>
 	</head>
 	<body>
 		<h1>Network Settings</h1>
 		<form action="/post" method="POST">
-			<div>
+			<div class="radio">
+				<div>WiFi connection: </div>
+				<input type="radio" id="wps" name="is_wps" value="1" onclick="clickWPS();">
+				<label for="wps">WPS</label>
+				<input type="radio" id="ssid" name="is_wps" value="0" onclick="clickSSID();">
+				<label for="ssid">SSID</label><br>
+			</div>
+			<div class="ssid">
 				<label for="ssid">WiFi SSID</label>
 				<input id="ssid" type="text" name="ssid" placeholder="WiFi SSID" value="$SSID$" maxlength="32">
 			</div>
-			<div>
+			<div class="ssid">
 				<label for="pass">WiFi Passphrase</label>	
 				<input id="pass" type="text" name="pass" placeholder="WiFi Passphrase" maxlength="32" value="$PASS$"> 
 			</div>
@@ -66,5 +77,26 @@ form > div > input {
 		<a class="nav" href="/restart">Restart</a>
 		<a class="nav" href="/reset">Reset</a>
 		<a class="nav" href="/debug">Debug</a>
+		<script>
+			function clickWPS() {
+				var items = document.getElementsByClassName('ssid');
+				for (var i = 0; i < items.length; i++) {
+					items[i].style.display = 'none';
+				}
+			}
+			function clickSSID() {
+				var items = document.getElementsByClassName('ssid');
+				for (var i = 0; i < items.length; i++) {
+					items[i].style.display = 'block';
+				}
+			}
+			if ($IS_WPS$) {
+				document.getElementById("wps").checked="checked"
+				clickWPS();
+			} else {
+				document.getElementById("ssid").checked="checked"
+				clickSSID();
+			}
+		</script>
 	</body>
 </html>

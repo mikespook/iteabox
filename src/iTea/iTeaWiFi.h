@@ -12,7 +12,6 @@ class iTeaWiFiClass {
 		void init(iTeaConfigClass *);
 
 		uint8_t connect();
-		uint8_t beginWPS();
 		uint8_t wait(int);
 		void setClock();
 	private:

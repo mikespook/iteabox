@@ -22,6 +22,8 @@ iTeaConfigClass::iTeaConfigClass() {
 }
 
 void iTeaConfigClass::load() {
+	_isWPS = char(EEPROM.read(ITEA_WIFI_IS_WPS_OFFSET));
+
 	LOAD(_wifiSSID, ITEA_WIFI_SSID_OFFSET, ITEA_WIFI_SSID_SIZE);
 	LOAD(_wifiPass, ITEA_WIFI_PASS_OFFSET, ITEA_WIFI_PASS_SIZE);
 
@@ -47,6 +49,9 @@ void iTeaConfigClass::load() {
 
 void iTeaConfigClass::dump() {
 	clean();
+
+	EEPROM.write(ITEA_WIFI_IS_WPS_OFFSET, _isWPS);
+
 	DUMP(_wifiSSID, ITEA_WIFI_SSID_OFFSET, ITEA_WIFI_SSID_SIZE);
 	DUMP(_wifiPass, ITEA_WIFI_PASS_OFFSET, ITEA_WIFI_PASS_SIZE);
 
@@ -79,6 +84,14 @@ GET(MQTTPass, mqttPass);
 GET(MQTTTopicHeartbeat, mqttTopicHeartbeat);
 GET(MQTTHeartbeatTick, mqttHeartbeatTick);
 GET(MQTTClientId, mqttClientId);
+
+char iTeaConfigClass::isWPS() {
+	return _isWPS;
+}
+
+void iTeaConfigClass::setIsWPS(const char is) {
+	_isWPS = is;
+}
 
 void iTeaConfigClass::clean() {
 	for (int i = 0; i < ITEA_EEPROM_SIZE; i++) {

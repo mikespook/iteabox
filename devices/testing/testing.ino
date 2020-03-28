@@ -44,7 +44,15 @@ uint8_t initHandler(uint8_t state, void *params ...) {
   uint8_t r = iTeaSetup.setup();
   if (r != ITEA_STATE_SETUP) {
     Serial.println("Run...normal"); 
-    iTeaWiFi.connect();
+    #ifdef USE_WPS
+    if (WL_CONNECTED != iTeaWiFi.connectWPS()) {  
+    #else
+    if (WL_CONNECTED != iTeaWiFi.connect()) {
+    #endif
+      Serial.printf("WiFi Error\n");
+      return ITEA_STATE_RUN;
+    }
+    iTeaWiFi.setClock();
     iTeaMQTT.subscribe("itea:pump:sub", callback);
     r = iTeaMQTT.setup();
     if (r != ITEA_STATE_MQTT_CONNECT) {
