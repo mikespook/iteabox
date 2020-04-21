@@ -1,6 +1,9 @@
 #include <iTeaHandler.h>
 #include <iTeaConfig.h>
 #include <DHTesp.h>
+#include <LiquidCrystal_I2C.h>
+
+#define DEBUG true
 
 #define SERIAL_SPEED 115200
 
@@ -26,50 +29,37 @@
 #define TEMP_MIN_2 36
 #define TEMP_MAX_2 38
 
+#define LCD_COLUMNS 20
+#define LCD_ROWS 2
+
+LiquidCrystal_I2C lcd(0x3F, LCD_COLUMNS, LCD_ROWS);
+
 DHTesp dht;
 int proofStep = 0;
 int buttonPos = HIGH;
-int relayState = OFF;
 int lastOn = 0;
 int lastOff = 0;
+int errorCount = 0;
 
 void setup() {
   Serial.begin(SERIAL_SPEED);
   Serial.printf("Serial speed: %d\n", SERIAL_SPEED); 
-
+  
   iTeaHandler.setup();
   iTeaHandler.add(ITEA_STATE_INIT, initHandler);
   iTeaHandler.add(ITEA_STATE_RUN, runHandler);
-  heatOn();
 }
 
 void loop() {
   iTeaHandler.loop(NULL);
 }
 
-
 void heatOn() {
-  if (relayState == OFF) {
-    onBuz();
-    relayState = ON;  
-  }
-  rawOn();
-}
-
-void rawOn() {
   digitalWrite(ITEA_RELAY, HIGH);
   lastOn = millis();
 }
 
 void heatOff() {
-  if (relayState == ON) {
-    offBuz();
-    relayState = OFF;  
-  }  
-  rawOff();
-}
-
-void rawOff() {
   digitalWrite(ITEA_RELAY, LOW);
   lastOff = millis();  
 }
@@ -103,25 +93,25 @@ uint8_t runHandler(uint8_t state, void *params ...) {
   delay(dht.getMinimumSamplingPeriod());
   float humidity = dht.getHumidity();
   float temperature = dht.getTemperature();
+  String stepText;
   switch(proofStep) {
     case 1:
-    Serial.println("Step 1");     
+    stepText = String(TEMP_MIN_1) + "-" + String(TEMP_MAX_1) + String((char)0xDF) + "C Proof #1";
     proof1(humidity, temperature);
     break;
     case 2:
-    Serial.println("Step 2");    
+    stepText = String(TEMP_MIN_2) + "-" + String(TEMP_MAX_2) + String((char)0xDF) + "C Proof #2";
     proof2(humidity, temperature);
     break;
     default:
-    Serial.println("Off");  
+    stepText = "Off";
     heatOff();
     break;
   }
-  Serial.print(dht.getStatusString());
-  Serial.print("\t");
-  Serial.print(humidity, 2);
-  Serial.print("\t\t");
-  Serial.println(temperature, 2);
+  printLCD(humidity, temperature, stepText);
+  #ifdef DEBUG
+  printSerial(humidity, temperature, stepText);
+  #endif
   return ITEA_STATE_RUN; 
 }
 
@@ -131,7 +121,10 @@ bool check(int last, float temperature, float target) {
   t = log(-t + 11) * 30;
   if (t < 0) {
 	t = 0;	  
-  }
+  } 
+  #ifdef DEBUG
+  Serial.printf("Time: %d Threshold: %d\n", now - last, t * 1000);
+  #endif
   return (now - last) > t * 1000;
 }
 
@@ -140,13 +133,12 @@ void proof1(float humidity, float temperature) {
     if (check(lastOn, temperature, TEMP_MIN_1)) {
       heatOn();
     } else {
-      rawOff();  
+      heatOff();
     }
     return;
   }
   if (temperature >= TEMP_MAX_1) {
     overBuz();
-    return; 
   }
   heatOff();
   return; 
@@ -157,13 +149,12 @@ void proof2(float humidity, float temperature) {
     if (check(lastOn, temperature, TEMP_MIN_2)) {
       heatOn();
     } else {
-      rawOff();  
+      heatOff();  
     }
     return; 
   }
   if (temperature >= TEMP_MAX_2) {
-    overBuz();    
-    return; 
+    overBuz();
   }
   heatOff();
   return; 
@@ -172,11 +163,17 @@ void proof2(float humidity, float temperature) {
 
 uint8_t initHandler(uint8_t state, void *params ...) {  
   Serial.println("Init...");
+
+  lcd.init();
+  lcd.backlight();
+  
   dht.setup(ITEA_DHT_PIN, DHTesp::DHT11);
   pinMode(ITEA_RELAY, OUTPUT);
   pinMode(ITEA_BUZZER, OUTPUT);
   pinMode(ITEA_BUTTON, INPUT_PULLUP);
+  heatOn();
   heatOff();
+  onBuz();
   return ITEA_STATE_RUN;
 }
 
@@ -211,4 +208,40 @@ void offBuz() {
 void overBuz() {
   tone(ITEA_BUZZER, NOTE_A, TONE_SPEED); 
   delay(TONE_SPEED);
+}
+
+void printLCD(float humidity, float temperature, String stepText) {
+  lcd.clear();
+  lcd.setCursor(0,0);
+  lcd.print(stepText);
+  lcd.setCursor(0,1);
+  if (isnan(temperature)) {
+    lcd.print("--.--");
+    errorCount++;
+    if (errorCount > 5) {
+      offBuz();
+      errorCount = 0;
+    }
+  } else {
+    lcd.print(temperature);
+     errorCount = 0;
+  }
+  lcd.print((char)0xDF);
+  lcd.print("C/");
+  if (isnan(humidity)) {
+    lcd.print("--.--");
+  } else {
+    lcd.print(humidity);
+  }
+  lcd.print("%");
+}
+
+void printSerial(float humidity, float temperature, String stepText) {
+  Serial.print(stepText);
+  Serial.print("\tDHT Status: ");
+  Serial.print(dht.getStatusString());
+  Serial.print("\t Humidity: ");
+  Serial.print(humidity, 2);
+  Serial.print("\tTemperature: ");
+  Serial.println(temperature, 2);  
 }
