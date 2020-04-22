@@ -3,7 +3,7 @@
 #include <DHTesp.h>
 #include <LiquidCrystal_I2C.h>
 
-#define DEBUG true
+// #define DEBUG true
 
 #define SERIAL_SPEED 115200
 
@@ -29,17 +29,24 @@
 #define TEMP_MIN_2 36
 #define TEMP_MAX_2 38
 
-#define LCD_COLUMNS 20
+#define LCD_COLUMNS 16
 #define LCD_ROWS 2
+#define LCD_BACKLIGHT_HOLDING 10000
+
+#define BTN_HOLDING 1600
+#define BTN_HOLDING_DELAY 100
 
 LiquidCrystal_I2C lcd(0x3F, LCD_COLUMNS, LCD_ROWS);
 
 DHTesp dht;
 int proofStep = 0;
 int buttonPos = HIGH;
+int buttonPressed = 0;
+int buttonHolding = 0;
 int lastOn = 0;
 int lastOff = 0;
 int errorCount = 0;
+int dhtWaiting = 0;
 
 void setup() {
   Serial.begin(SERIAL_SPEED);
@@ -65,12 +72,16 @@ void heatOff() {
 }
 
 uint8_t runHandler(uint8_t state, void *params ...) {
-  if (digitalRead(ITEA_BUTTON) == LOW) {
+  if (buttonHolding <= BTN_HOLDING && digitalRead(ITEA_BUTTON) == LOW) {    
+    lcd.backlight();
     buttonPos = LOW;
+    buttonPressed = millis();    
+    buttonHolding+=BTN_HOLDING_DELAY;
+    buttonHoldingProgress(buttonHolding);
+    delay(BTN_HOLDING_DELAY);
     return ITEA_STATE_RUN; 
   }
-
-  if (buttonPos == LOW) {
+  if (buttonHolding > BTN_HOLDING && buttonPos == LOW) {
     buttonPos = HIGH;
     proofStep++;
     if (proofStep > 2) {
@@ -87,31 +98,38 @@ uint8_t runHandler(uint8_t state, void *params ...) {
       step2Buz();
       break;  
     }
+    buttonHolding = 0;
     return ITEA_STATE_RUN;    
   }
-
-  delay(dht.getMinimumSamplingPeriod());
-  float humidity = dht.getHumidity();
-  float temperature = dht.getTemperature();
-  String stepText;
-  switch(proofStep) {
-    case 1:
-    stepText = String(TEMP_MIN_1) + "-" + String(TEMP_MAX_1) + String((char)0xDF) + "C Proof #1";
-    proof1(humidity, temperature);
-    break;
-    case 2:
-    stepText = String(TEMP_MIN_2) + "-" + String(TEMP_MAX_2) + String((char)0xDF) + "C Proof #2";
-    proof2(humidity, temperature);
-    break;
-    default:
-    stepText = "Off";
-    heatOff();
-    break;
+  buttonHolding = 0;
+  if (millis() - buttonPressed > LCD_BACKLIGHT_HOLDING) {
+    lcd.noBacklight();  
   }
-  printLCD(humidity, temperature, stepText);
-  #ifdef DEBUG
-  printSerial(humidity, temperature, stepText);
-  #endif
+  if(millis() - dhtWaiting > dht.getMinimumSamplingPeriod()){    
+    float humidity = dht.getHumidity();
+    float temperature = dht.getTemperature();
+    String stepText;
+    switch(proofStep) {
+      case 1:
+      stepText = String(TEMP_MIN_1) + "-" + String(TEMP_MAX_1) + String((char)0xDF) + "C Proof #1";
+      proof1(humidity, temperature);
+      break;
+      case 2:
+      stepText = String(TEMP_MIN_2) + "-" + String(TEMP_MAX_2) + String((char)0xDF) + "C Proof #2";
+      proof2(humidity, temperature);
+      break;
+      default:
+      stepText = "Off";
+      heatOff();
+      break;
+    }
+    buttonPos = HIGH;
+    printLCD(humidity, temperature, stepText);
+    #ifdef DEBUG
+    printSerial(humidity, temperature, stepText);
+    #endif
+    dhtWaiting = millis();
+  }
   return ITEA_STATE_RUN; 
 }
 
@@ -162,7 +180,9 @@ void proof2(float humidity, float temperature) {
 
 
 uint8_t initHandler(uint8_t state, void *params ...) {  
+  #ifdef DEBUG
   Serial.println("Init...");
+  #endif
 
   lcd.init();
   lcd.backlight();
@@ -174,6 +194,7 @@ uint8_t initHandler(uint8_t state, void *params ...) {
   heatOn();
   heatOff();
   onBuz();
+  dhtWaiting = buttonPressed = millis();   
   return ITEA_STATE_RUN;
 }
 
@@ -234,6 +255,17 @@ void printLCD(float humidity, float temperature, String stepText) {
     lcd.print(humidity);
   }
   lcd.print("%");
+}
+
+void buttonHoldingProgress(int progress) {
+  if (progress == BTN_HOLDING_DELAY) {
+    lcd.clear();
+    lcd.setCursor(0,0);
+    lcd.print("Holding...");   
+  }  
+  int c = progress / BTN_HOLDING_DELAY % LCD_COLUMNS - 1;  
+  lcd.setCursor(c, 1);
+  lcd.print((char)0xFF); 
 }
 
 void printSerial(float humidity, float temperature, String stepText) {
